@@ -48,6 +48,10 @@ def make_url_hash(url):
     """Create a unique ID for each URL"""
     return hashlib.md5(url.encode()).hexdigest()
 
+def make_file_hash(file_content):
+    """Create a unique ID for uploaded file"""
+    return hashlib.md5(file_content).hexdigest()
+
 def is_youtube_url(url):
     """Check if URL is from YouTube"""
     youtube_parts = [
@@ -76,6 +80,15 @@ def download_video(url, save_path):
         return True, "Video downloaded successfully"
     except Exception as e:
         return False, f"Could not download video: {str(e)}"
+
+def save_uploaded_file(uploaded_file, save_path):
+    """Save uploaded file to temporary location"""
+    try:
+        with open(save_path, 'wb') as f:
+            f.write(uploaded_file.getbuffer())
+        return True, "File saved successfully"
+    except Exception as e:
+        return False, f"Could not save uploaded file: {str(e)}"
 
 def extract_audio(video_file, audio_file):
     """Get audio from video using ffmpeg"""
@@ -190,7 +203,7 @@ def recognize_song(audio_file):
         return False, f"Shazam error: {str(e)}"
 
 def process_youtube_video(url, cache_data):
-    """Main function to process the video"""
+    """Main function to process the video from YouTube URL"""
     # Check if we already processed this URL
     url_id = make_url_hash(url)
     if url_id in cache_data:
@@ -245,6 +258,60 @@ def process_youtube_video(url, cache_data):
     
     return result
 
+def process_uploaded_video(uploaded_file, cache_data):
+    """Main function to process uploaded video file"""
+    # Check if we already processed this file
+    file_content = uploaded_file.getvalue()
+    file_id = make_file_hash(file_content)
+    if file_id in cache_data:
+        st.info("🎯 Found in cache!")
+        return cache_data[file_id]
+    
+    result = {
+        'success': False,
+        'error': None,
+        'song_info': None
+    }
+    
+    # Create temporary folder for files
+    with tempfile.TemporaryDirectory() as temp_folder:
+        # Get file extension from uploaded file name
+        file_extension = os.path.splitext(uploaded_file.name)[1]
+        if not file_extension:
+            file_extension = '.mp4'  # Default extension
+        
+        video_path = os.path.join(temp_folder, f'uploaded_video{file_extension}')
+        audio_path = os.path.join(temp_folder, 'audio.mp3')
+        
+        # Step 1: Save uploaded file
+        st.info("💾 Processing uploaded file...")
+        success, message = save_uploaded_file(uploaded_file, video_path)
+        if not success:
+            result['error'] = message
+            return result
+        
+        # Step 2: Extract audio
+        st.info("🎵 Extracting audio...")
+        success, message = extract_audio(video_path, audio_path)
+        if not success:
+            result['error'] = message
+            return result
+        
+        # Step 3: Recognize song
+        st.info("🔍 Identifying song with Shazam...")
+        success, song_info = recognize_song(audio_path)
+        if success:
+            result['success'] = True
+            result['song_info'] = song_info
+            
+            # Save to cache
+            cache_data[file_id] = result
+            save_cache(cache_data)
+        else:
+            result['error'] = song_info
+    
+    return result
+
 def show_song_result(song_info):
     """Display the song information nicely"""
     st.success("🎉 Song found!")
@@ -292,7 +359,7 @@ def show_song_result(song_info):
 def main():
     """Main app function"""
     st.title("🎵 YouTube Shorts Song Finder")
-    st.markdown("Find out what song is playing in any YouTube Shorts video!")
+    st.markdown("Find out what song is playing in any YouTube video or upload your own video file!")
     
     # Load cached results
     cache_data = load_cache()
@@ -301,10 +368,15 @@ def main():
     with st.sidebar:
         st.markdown("### ℹ️ How to use:")
         st.markdown("""
+        **Option 1: YouTube URL**
         1. Copy a YouTube Shorts URL
-        2. Paste it below
+        2. Paste it in the URL field
         3. Click 'Find Song'
-        4. Get song info and streaming links!
+        
+        **Option 2: Upload Video**
+        1. Upload a video file (MP4, MOV, AVI, etc.)
+        2. Click 'Find Song'
+        3. Get song info and streaming links!
         """)
         
         st.markdown("### 🎵 About this app")
@@ -312,7 +384,8 @@ def main():
         - **100% Free** - No API keys needed
         - **Uses Shazam** - High accuracy recognition
         - **Privacy friendly** - Processes audio locally
-        - **Caches results** - Saves time on repeat URLs
+        - **Caches results** - Saves time on repeat files/URLs
+        - **File uploads** - Works with any video format
         """)
         
         st.markdown("### 📊 Stats")
@@ -325,14 +398,40 @@ def main():
             st.success("Cache cleared!")
             st.rerun()
     
-    # Main input area
-    st.markdown("### 🔗 Paste YouTube Shorts URL here")
+    # Input method selection
+    st.markdown("### 🎯 Choose your input method")
     
-    youtube_url = st.text_input(
-        "YouTube URL",
-        placeholder="https://youtube.com/shorts/...",
-        help="Paste any YouTube Shorts URL here"
+    input_method = st.radio(
+        "Select how you want to provide the video:",
+        ["YouTube URL", "Upload Video File"],
+        horizontal=True
     )
+    
+    # Initialize variables
+    youtube_url = None
+    uploaded_file = None
+    
+    # Show appropriate input based on selection
+    if input_method == "YouTube URL":
+        st.markdown("### 🔗 Paste YouTube URL here")
+        youtube_url = st.text_input(
+            "YouTube URL",
+            placeholder="https://youtube.com/shorts/...",
+            help="Paste any YouTube URL here (Shorts, regular videos, etc.)"
+        )
+    
+    else:  # Upload Video File
+        st.markdown("### 📁 Upload your video file")
+        uploaded_file = st.file_uploader(
+            "Choose a video file",
+            type=['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', '3gp'],
+            help="Upload any video file. The first 15 seconds will be analyzed."
+        )
+        
+        # Show file info if uploaded
+        if uploaded_file is not None:
+            file_size = len(uploaded_file.getvalue()) / (1024 * 1024)  # Convert to MB
+            st.info(f"📄 **{uploaded_file.name}** ({file_size:.1f} MB)")
     
     # Buttons
     col1, col2 = st.columns([1, 1])
@@ -342,23 +441,33 @@ def main():
     
     with col2:
         if st.button("📋 Try example", use_container_width=True):
-            st.info("Paste any real YouTube Shorts URL to test!")
+            st.info("Upload a video file or paste any real YouTube URL to test!")
     
     # Process when button clicked
     if find_button:
-        # Check if URL was entered
-        if not youtube_url:
-            st.error("⚠️ Please enter a YouTube URL")
-            return
+        # Check if input was provided based on selected method
+        if input_method == "YouTube URL":
+            if not youtube_url:
+                st.error("⚠️ Please enter a YouTube URL")
+                return
+            
+            # Check if it's a valid YouTube URL
+            if not is_youtube_url(youtube_url):
+                st.warning("⚠️ This doesn't look like a YouTube URL. Please check it.")
+                return
+            
+            # Process the YouTube video
+            with st.spinner("Working on it..."):
+                result = process_youtube_video(youtube_url, cache_data)
         
-        # Check if it's a valid YouTube URL
-        if not is_youtube_url(youtube_url):
-            st.warning("⚠️ This doesn't look like a YouTube URL. Please check it.")
-            return
-        
-        # Process the video
-        with st.spinner("Working on it..."):
-            result = process_youtube_video(youtube_url, cache_data)
+        else:  # Upload Video File
+            if uploaded_file is None:
+                st.error("⚠️ Please upload a video file")
+                return
+            
+            # Process the uploaded video
+            with st.spinner("Working on it..."):
+                result = process_uploaded_video(uploaded_file, cache_data)
         
         # Show results
         if result['success']:
@@ -374,6 +483,8 @@ def main():
                 st.info("💡 Make sure FFmpeg is installed on your system.")
             elif "download" in error_msg:
                 st.info("💡 Check if the URL is correct and the video is public.")
+            elif "save" in error_msg or "upload" in error_msg:
+                st.info("💡 Try uploading the file again or check the file format.")
 
 if __name__ == "__main__":
     main()
