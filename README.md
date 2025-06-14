@@ -102,20 +102,9 @@ Then open your browser at:
 
 ---
 
-## 💡 Example Use Case
+## 🎥 Demo
 
-### Input:
-```
-https://youtube.com/shorts/rt8n4kE51_s?si=BPsN64mPUoLdAHUW
-```
-
-### Output:
-- 🎵 **Title**: Lollipop (feat. Static Major)  
-- 🎤 **Artist**: Lil Wayne  
-- 💽 **Album**: Tha Carter III  
-- 📅 **Released**: 2008  
-- 🔗 **Listen on**: Spotify, Apple Music, Shazam  
-- 🖼 **Cover Art**: Displayed in app
+🔗 [Click to watch the demo video](./demo/demo-video.mkv)
 
 ---
 
