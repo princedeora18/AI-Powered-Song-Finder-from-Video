@@ -1,87 +1,143 @@
-# YouTube Shorts Audio Identifier
+# 🔍 AI-Powered Song Finder from Video
 
-This application identifies songs used in YouTube Shorts, especially when the song name is not mentioned in the title or description. It is designed to detect audio that has been pre-attached by YouTube’s Shorts creation tool.
+A Streamlit web app that **automatically identifies music** from any YouTube video or uploaded video file using **Shazam’s audio recognition**.
 
-## Overview
+---
 
-Many YouTube Shorts feature background music added through YouTube’s built-in audio library or during the editing process. However, these videos often do not display the song name in the title, description, or anywhere visible to viewers. This tool bridges that gap by automatically downloading the video, extracting a short audio segment, and using Shazam’s audio fingerprinting system to identify the song.
+## 🎯 What It Does
 
-It’s designed specifically for use cases where the song is pre-attached by the creator but not disclosed—helping users quickly discover the track playing in any YouTube Shorts video.
+This tool helps you find music from:
+- **YouTube Shorts**
+- **Regular YouTube videos**
+- **Locally uploaded video files (MP4, AVI, MOV, etc.)**
 
-## Features
+It uses **AI audio fingerprinting** to:
+- Extract the **first 15 seconds** of the video’s audio
+- Identify the background music using the **Shazam API**
+- Display **song title, artist, album, cover art, and streaming links**
+- **Cache results** to avoid reprocessing the same input
 
-- Designed specifically for YouTube Shorts with unlisted background music
-- Automatically extracts audio from Shorts using `yt-dlp` and `ffmpeg`
-- Utilizes the Shazamio library for music recognition
-- Displays song title, artist, album, release date, and streaming links
-- Lightweight and easy-to-use web interface built with Streamlit
+---
 
-## How It Works
+## 🚀 Key Features
 
-1. User inputs a YouTube Shorts URL.
-2. The app downloads the video and extracts its audio.
-3. The audio is passed to the Shazamio client for fingerprint matching.
-4. The song details are returned and displayed in a user-friendly format.
+✅ **Two Input Methods**  
+&nbsp;&nbsp;&nbsp;&nbsp;🔗 Paste any YouTube link (Shorts or full-length)  
+&nbsp;&nbsp;&nbsp;&nbsp;📁 Upload any video file (MP4, MOV, AVI, etc.)
 
-## Tech Stack
+✅ **No API Key Needed**  
+&nbsp;&nbsp;&nbsp;&nbsp;Uses Shazamio (public Python client) for music recognition
 
-- Python 3.10+
-- Streamlit (UI)
-- yt-dlp (video download)
-- FFmpeg (audio extraction)
-- Shazamio (song recognition)
+✅ **Fast & Local Processing**  
+&nbsp;&nbsp;&nbsp;&nbsp;Everything runs locally—your data stays private
 
-## Installation
+✅ **Smart Caching**  
+&nbsp;&nbsp;&nbsp;&nbsp;Previous results are stored for quicker repeated searches
 
-### Requirements
+✅ **Full Metadata**  
+&nbsp;&nbsp;&nbsp;&nbsp;Get song title, artist, album, release date, cover art, and streaming links (Spotify, Apple Music, Shazam)
 
-- Python 3.10 or higher
-- FFmpeg installed and accessible in system PATH
+✅ **Minimal Setup**  
+&nbsp;&nbsp;&nbsp;&nbsp;Only Python + FFmpeg required to get started
 
-### Setup
+---
+
+## 🛠 How It Works
+
+1. **📥 Download / Upload Video**  
+   - Downloads from YouTube using `yt-dlp`  
+   - Or saves the uploaded file to a temp folder
+
+2. **🎙 Extract Audio**  
+   - Uses `FFmpeg` to extract a 15-second audio clip
+
+3. **🔎 Identify Music**  
+   - Uses `Shazamio` (Python wrapper for Shazam) for music recognition
+
+4. **🎧 Show Results**  
+   - Displays full song info, album cover, and platform links
+
+5. **💾 Cache Response**  
+   - Results saved in `song_cache.json` for reuse
+
+---
+
+## 🧰 Tech Stack
+
+| Tool         | Use Case                         |
+|--------------|----------------------------------|
+| Python 3.10+ | Core language                    |
+| Streamlit    | Frontend interface               |
+| yt-dlp       | YouTube video downloader         |
+| FFmpeg       | Extracts audio from video        |
+| Shazamio     | Song recognition (Shazam API)    |
+| asyncio      | Handles async calls for Shazamio |
+
+---
+
+## 🔧 Installation
+
+### 1. Install Dependencies
 
 ```bash
-git clone https://github.com/yourusername/youtube-shorts-song-finder.git
-cd youtube-shorts-song-finder
+git clone https://github.com/yourusername/youtube-song-finder-ai.git
+cd youtube-song-finder-ai
 pip install -r requirements.txt
-````
+```
 
-## Running the App
+### 2. Install FFmpeg  
+Make sure FFmpeg is installed and added to your system PATH:  
+➡️ [FFmpeg Official Site](https://ffmpeg.org/download.html)
+
+---
+
+## ▶️ Run the App
 
 ```bash
 streamlit run app.py
 ```
 
-This will launch the application in your browser at `http://localhost:8501`.
+Then open your browser at:  
+🔗 [http://localhost:8501](http://localhost:8501)
 
-## Example Use Case
+---
 
-Input:
+## 💡 Example Use Case
 
-Video Credit: MisoDope (UCmPizj-upw6BjWs2gEJt9ng)
-
+### Input:
 ```
 https://youtube.com/shorts/rt8n4kE51_s?si=BPsN64mPUoLdAHUW
 ```
 
-Output:
+### Output:
+- 🎵 **Title**: Lollipop (feat. Static Major)  
+- 🎤 **Artist**: Lil Wayne  
+- 💽 **Album**: Tha Carter III  
+- 📅 **Released**: 2008  
+- 🔗 **Listen on**: Spotify, Apple Music, Shazam  
+- 🖼 **Cover Art**: Displayed in app
 
-* Song Title: Lollipop (feat. Static Major) [feat. Static Major]
-* Artist: Lil Wayne
-* Album: Tha Carter III
-* Release Date: 2008
-* Links: Spotify, Apple Music, Shazam
+---
 
-## File Structure
+## 🗂 File Structure
 
 ```
-├── app.py               # Main application script
-├── requirements.txt     # Python dependencies
-├── song_cache.json      # Local cache to speed up repeated queries
-└── README.md
+├── app.py               # Main Streamlit app
+├── requirements.txt     # All dependencies
+├── song_cache.json      # Stores previous results
+└── README.md            # This file
 ```
 
-## License
+---
 
-This project is licensed under the Apache License 2.0.
+## 📌 Perfect For
 
+- Finding **uncredited background music** in YouTube Shorts
+- Discovering **TikTok-style tracks** in uploaded videos
+- Quickly grabbing song info for **personal use or content creation**
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0**.
