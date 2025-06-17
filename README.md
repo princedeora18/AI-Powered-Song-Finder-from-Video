@@ -97,7 +97,7 @@ Make sure FFmpeg is installed and added to your system PATH:
 streamlit run app.py
 ```
 
-Then open your browser at:  
+Then open your browser:  
 🔗 [http://localhost:8501](http://localhost:8501)
 
 ---
