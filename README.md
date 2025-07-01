@@ -1,10 +1,10 @@
-# 🔍 AI-Powered Song Finder from Video
+# AI-Powered Song Finder from Video
 
 A Streamlit web app that **automatically identifies music** from any YouTube video or uploaded video file using **Shazam’s audio recognition**.
 
 ---
 
-## 🎯 What It Does
+## What It Does
 
 This tool helps you find music from:
 - **YouTube Shorts**
@@ -19,50 +19,50 @@ It uses **AI audio fingerprinting** to:
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-✅ **Two Input Methods**  
+**Two Input Methods**  
 &nbsp;&nbsp;&nbsp;&nbsp;🔗 Paste any YouTube link (Shorts or full-length)  
 &nbsp;&nbsp;&nbsp;&nbsp;📁 Upload any video file (MP4, MOV, AVI, etc.)
 
-✅ **No API Key Needed**  
+**No API Key Needed**  
 &nbsp;&nbsp;&nbsp;&nbsp;Uses Shazamio (public Python client) for music recognition
 
-✅ **Fast & Local Processing**  
+**Fast & Local Processing**  
 &nbsp;&nbsp;&nbsp;&nbsp;Everything runs locally—your data stays private
 
-✅ **Smart Caching**  
+**Smart Caching**  
 &nbsp;&nbsp;&nbsp;&nbsp;Previous results are stored for quicker repeated searches
 
-✅ **Full Metadata**  
+**Full Metadata**  
 &nbsp;&nbsp;&nbsp;&nbsp;Get song title, artist, album, release date, cover art, and streaming links (Spotify, Apple Music, Shazam)
 
-✅ **Minimal Setup**  
+**Minimal Setup**  
 &nbsp;&nbsp;&nbsp;&nbsp;Only Python + FFmpeg required to get started
 
 ---
 
-## 🛠 How It Works
+## How It Works
 
-1. **📥 Download / Upload Video**  
+1. **Download / Upload Video**  
    - Downloads from YouTube using `yt-dlp`  
    - Or saves the uploaded file to a temp folder
 
-2. **🎙 Extract Audio**  
+2. **Extract Audio**  
    - Uses `FFmpeg` to extract a 15-second audio clip
 
-3. **🔎 Identify Music**  
+3. **Identify Music**  
    - Uses `Shazamio` (Python wrapper for Shazam) for music recognition
 
-4. **🎧 Show Results**  
+4. **Show Results**  
    - Displays full song info, album cover, and platform links
 
-5. **💾 Cache Response**  
+5. **Cache Response**  
    - Results saved in `song_cache.json` for reuse
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Tool         | Use Case                         |
 |--------------|----------------------------------|
@@ -75,7 +75,7 @@ It uses **AI audio fingerprinting** to:
 
 ---
 
-## 🔧 Installation
+## Installation
 
 ### 1. Install Dependencies
 
@@ -87,11 +87,11 @@ pip install -r requirements.txt
 
 ### 2. Install FFmpeg  
 Make sure FFmpeg is installed and added to your system PATH:  
-➡️ [FFmpeg Official Site](https://ffmpeg.org/download.html)
+ [FFmpeg Official Site](https://ffmpeg.org/download.html)
 
 ---
 
-## ▶️ Run the App
+## Run the App
 
 ```bash
 streamlit run app.py
@@ -116,16 +116,6 @@ Then open your browser:
 ├── song_cache.json      # Stores previous results
 └── README.md            # This file
 ```
-
----
-
-## 📌 Perfect For
-
-- Finding **uncredited background music** in YouTube Shorts
-- Discovering **TikTok-style tracks** in uploaded videos
-- Quickly grabbing song info for **personal use or content creation**
-
----
 
 ## 📄 License
 
